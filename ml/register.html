@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Smart Crop Prediction</title>
+    <style>
+        :root {
+            --bg-1: #6d68d8;
+            --bg-2: #5f4dbf;
+            --panel-border: rgba(255, 255, 255, 0.2);
+            --text: #f6f3ff;
+            --text-soft: #d7cef8;
+            --accent: #ffd74a;
+            --success: #6af0a5;
+            --danger: #ff7b8c;
+            --card: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at 10% 10%, #8c89f1 0%, transparent 40%),
+                        radial-gradient(circle at 95% 80%, #3f4bab 0%, transparent 30%),
+                        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .shell {
+            width: min(1080px, 100%);
+            min-height: 680px;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 24px 48px rgba(19, 18, 52, 0.5);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+        }
+
+        .left, .right { padding: 48px 46px; }
+        .left { border-right: 1px solid rgba(255, 255, 255, 0.14); }
+        .logo {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.14);
+            margin-bottom: 26px;
+            font-size: 20px;
+            font-weight: 800;
+        }
+        .title { font-size: clamp(2rem, 3.6vw, 3.4rem); line-height: 1.03; font-weight: 800; margin-bottom: 14px; }
+        .subtitle { color: var(--text-soft); font-size: 1.22rem; line-height: 1.45; max-width: 430px; }
+        .stats { margin-top: 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .stat {
+            border: 1px solid var(--panel-border);
+            background: var(--card);
+            border-radius: 16px;
+            min-height: 118px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 14px;
+        }
+        .stat strong { display: block; color: var(--accent); font-size: 2.1rem; line-height: 1; margin-bottom: 8px; }
+        .stat span { color: var(--text-soft); font-size: 1rem; font-weight: 600; }
+
+        .welcome { font-size: 3rem; line-height: 1.08; font-weight: 800; margin-top: 8px; }
+        .welcome-sub { margin-top: 8px; color: var(--text-soft); font-size: 1.3rem; }
+
+        .tabs {
+            margin-top: 24px;
+            background: rgba(34, 30, 87, 0.45);
+            border-radius: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 4px;
+            gap: 4px;
+        }
+        .tabs a {
+            text-align: center;
+            border-radius: 10px;
+            padding: 14px 8px;
+            color: var(--text-soft);
+            font-size: 1.05rem;
+            font-weight: 700;
+            background: transparent;
+            text-decoration: none;
+        }
+        .tabs a.active { background: rgba(255, 255, 255, 0.22); color: #fff; }
+
+        .msg {
+            margin-top: 18px;
+            border-radius: 12px;
+            padding: 13px 14px;
+            border: 1px solid transparent;
+            font-size: 1.03rem;
+            font-weight: 600;
+            display: none;
+        }
+        .msg.success { background: rgba(49, 255, 166, 0.14); border-color: rgba(112, 255, 196, 0.45); color: #8fffc8; }
+        .msg.error { background: rgba(255, 45, 88, 0.14); border-color: rgba(255, 121, 144, 0.45); color: #ffb0ba; }
+
+        form { margin-top: 18px; }
+        .field { margin-bottom: 18px; }
+        label {
+            display: block;
+            font-size: 0.98rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: #f2ecff;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .input-wrap input {
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid var(--panel-border);
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            padding: 14px;
+            font-size: 1.1rem;
+        }
+        .input-wrap input::placeholder { color: #c5bae9; }
+
+        .submit {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #fff;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06));
+            border-radius: 15px;
+            font-size: 1.7rem;
+            font-weight: 800;
+            padding: 15px;
+            cursor: pointer;
+        }
+
+        .bottom-link { margin-top: 14px; text-align: center; }
+        .bottom-link a { color: #efe8ff; text-decoration: none; font-weight: 700; opacity: 0.9; }
+
+        @media (max-width: 920px) {
+            .shell { grid-template-columns: 1fr; min-height: auto; }
+            .left { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
+            .welcome { font-size: 2.35rem; }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="left">
+            <div class="logo">SC</div>
+            <h1 class="title">Smart Crop Prediction</h1>
+            <p class="subtitle">Create an account to save your preferences and access crop planning tools.</p>
+            <div class="stats">
+                <article class="stat"><div><strong>22+</strong><span>Crops Supported</span></div></article>
+                <article class="stat"><div><strong>96%</strong><span>Model Accuracy</span></div></article>
+                <article class="stat"><div><strong>7</strong><span>Input Factors</span></div></article>
+                <article class="stat"><div><strong>ML</strong><span>Powered by AI</span></div></article>
+            </div>
+        </section>
+        <section class="right">
+            <h2 class="welcome">Create account</h2>
+            <p class="welcome-sub">Register to start using Smart Crop Prediction</p>
+            <div class="tabs">
+                <a href="/login">Sign In</a>
+                <a class="active" href="/register">Register</a>
+            </div>
+            <div id="okMsg" class="msg success">Registration successful! Redirecting to login...</div>
+            <div id="errMsg" class="msg error">Please check all fields and try again.</div>
+            <form id="registerForm">
+                <div class="field">
+                    <label for="fullName">Full Name</label>
+                    <div class="input-wrap"><input id="fullName" type="text" placeholder="Farmer Name" required></div>
+                </div>
+                <div class="field">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrap"><input id="email" type="email" placeholder="farmer@example.com" required></div>
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap"><input id="password" type="password" placeholder="Create a strong password" required minlength="8"></div>
+                </div>
+                <div class="field">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="input-wrap"><input id="confirmPassword" type="password" placeholder="Re-enter password" required minlength="8"></div>
+                </div>
+                <button class="submit" type="submit">Register</button>
+            </form>
+            <p class="bottom-link"><a href="/login">Already have an account? Sign in</a></p>
+        </section>
+    </main>
+    <script>
+        const USERS_KEY = "sc_users_v1";
+        const form = document.getElementById("registerForm");
+        const okMsg = document.getElementById("okMsg");
+        const errMsg = document.getElementById("errMsg");
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePassword(password) {
+            const hasUpper = /[A-Z]/.test(password);
+            const hasLower = /[a-z]/.test(password);
+            const hasDigit = /\d/.test(password);
+            const hasSymbol = /[^A-Za-z0-9]/.test(password);
+            return password.length >= 8 && hasUpper && hasLower && hasDigit && hasSymbol;
+        }
+
+        async function sha256(value) {
+            const bytes = new TextEncoder().encode(value);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
+            return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            okMsg.style.display = "none";
+            errMsg.style.display = "none";
+
+            const name = document.getElementById("fullName").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+            if (!name || !email || !password || !confirmPassword) {
+                errMsg.textContent = "Please fill all fields.";
+                errMsg.style.display = "block";
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                errMsg.textContent = "Please enter a valid email address.";
+                errMsg.style.display = "block";
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                errMsg.textContent = "Password must be 8+ chars with upper, lower, number, and symbol.";
+                errMsg.style.display = "block";
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errMsg.textContent = "Passwords do not match.";
+                errMsg.style.display = "block";
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+            const emailLower = email.toLowerCase();
+            const exists = users.some((u) => String(u.email).toLowerCase() === emailLower);
+            if (exists) {
+                errMsg.textContent = "Account already exists for this email.";
+                errMsg.style.display = "block";
+                return;
+            }
+
+            const passwordHash = await sha256(password);
+            users.push({
+                name,
+                email: emailLower,
+                passwordHash,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+
+            okMsg.style.display = "block";
+            setTimeout(() => { window.location.href = "/login"; }, 900);
+        });
+    </script>
+</body>
+</html>

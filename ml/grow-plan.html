@@ -1,0 +1,498 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Details by Name</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 8px; }
+        .header p { opacity: 0.95; }
+        .header a {
+            display: inline-block;
+            margin-top: 12px;
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 999px;
+            padding: 8px 14px;
+        }
+        .chip-wrap {
+            margin-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .chip {
+            border: 1px solid rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.16);
+        }
+        h2 {
+            color: #4c5fd5;
+            margin-bottom: 14px;
+            font-size: 1.5rem;
+        }
+        .input-group { margin-bottom: 12px; }
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            border: 1px solid #d8d8d8;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 1rem;
+        }
+        .btn {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #4c5fd5 0%, #5f3ab3 100%);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .error {
+            color: #b82222;
+            background: #ffecec;
+            border-left: 4px solid #b82222;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 12px;
+            display: none;
+        }
+        .error.show { display: block; }
+        .empty {
+            color: #6d6d6d;
+            text-align: center;
+            padding: 20px 10px;
+            border: 1px dashed #c9c9c9;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+        .meta {
+            background: #f6f8ff;
+            border-left: 4px solid #4c5fd5;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+            color: #27316b;
+        }
+        .price-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .price-card {
+            background: #eef2ff;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #dbe3ff;
+        }
+        .price-card p {
+            color: #3a4585;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+        .price-card strong {
+            color: #1c255a;
+            font-size: 1rem;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 14px;
+        }
+        .detail-box {
+            background: #f7f9ff;
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #e3e7ff;
+        }
+        .detail-box h3 {
+            color: #2d3a84;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        .detail-box ul { list-style: none; }
+        .detail-box li {
+            padding: 6px 0;
+            border-bottom: 1px dashed #d9def7;
+            color: #1e264f;
+        }
+        .detail-box li:last-child { border-bottom: 0; }
+        @media (max-width: 800px) {
+            .price-strip { grid-template-columns: 1fr; }
+            .details-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Crop Details by Name</h1>
+            <p>Type crop name to see grow method, live mandi price, advantages and disadvantages.</p>
+            <a href="/">Prediction Page</a>
+            <a href="/login">Login Page</a>
+            <div id="cropChipWrap" class="chip-wrap"></div>
+        </div>
+
+        <div class="card">
+            <h2>Crop Details by Name</h2>
+            <form id="cropInfoForm">
+                <div class="input-group">
+                    <label for="cropName">Enter Crop Name (example: mango)</label>
+                    <input id="cropName" type="text" placeholder="mango / rice / wheat / cotton" required>
+                </div>
+                <button class="btn" type="submit">Show Full Details</button>
+            </form>
+
+            <div id="infoError" class="error"></div>
+            <div id="cropDetailsEmpty" class="empty">
+                Enter a crop name to view details.
+            </div>
+
+            <div id="cropDetails" style="display: none;">
+                <div id="cropDetailsMeta" class="meta"></div>
+                <div class="price-strip">
+                    <div class="price-card">
+                        <p>Minimum Price</p>
+                        <strong id="minPrice">NA</strong>
+                    </div>
+                    <div class="price-card">
+                        <p>Maximum Price</p>
+                        <strong id="maxPrice">NA</strong>
+                    </div>
+                    <div class="price-card">
+                        <p>Predicted Price</p>
+                        <strong id="predictedPrice">NA</strong>
+                    </div>
+                    <div class="price-card">
+                        <p>Market / Date</p>
+                        <strong id="marketDate">NA</strong>
+                    </div>
+                </div>
+                <div id="priceNote" class="meta" style="margin-top:10px;"></div>
+
+                <div class="details-grid">
+                    <div class="detail-box">
+                        <h3>How to Grow</h3>
+                        <ul id="howGrowList"></ul>
+                    </div>
+                    <div class="detail-box">
+                        <h3>Advantages</h3>
+                        <ul id="advantagesList"></ul>
+                    </div>
+                    <div class="detail-box">
+                        <h3>Disadvantages</h3>
+                        <ul id="disadvantagesList"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:5000/api";
+
+        const DEFAULT_CROPS = [
+            "apple", "banana", "blackgram", "chickpea", "coconut", "coffee", "cotton",
+            "grapes", "jute", "kidneybeans", "lentil", "maize", "mango", "mothbeans",
+            "mungbean", "muskmelon", "orange", "papaya", "pigeonpeas", "pomegranate",
+            "rice", "watermelon", "wheat"
+        ];
+
+        const cropKnowledge = {
+            rice: {
+                priceFallback: { min: "2100", max: "2800", marketDate: "Reference mandi rate" },
+                howGrow: [
+                    "Use nursery raising and transplant healthy seedlings to puddled fields.",
+                    "Keep standing water shallow during early stages and drain before harvest.",
+                    "Use split nitrogen application and manage weeds in first 40 days."
+                ],
+                advantages: [
+                    "High market demand and staple food crop.",
+                    "Suitable for high-rainfall and irrigated regions.",
+                    "Strong support through established farming practices."
+                ],
+                disadvantages: [
+                    "Requires high water availability.",
+                    "Can have higher labor cost in transplanting.",
+                    "Pest pressure can be high in humid conditions."
+                ]
+            },
+            wheat: {
+                priceFallback: { min: "2200", max: "3000", marketDate: "Reference mandi rate" },
+                howGrow: [
+                    "Prepare fine seedbed and sow in line method.",
+                    "Provide irrigation at critical stages, especially CRI and grain filling.",
+                    "Apply balanced fertilizers with split nitrogen."
+                ],
+                advantages: [
+                    "Stable demand and easier storage.",
+                    "Lower water need than paddy in many regions.",
+                    "Mechanization friendly in many areas."
+                ],
+                disadvantages: [
+                    "Heat stress can reduce yield in late season.",
+                    "Susceptible to rust diseases if unmanaged.",
+                    "Needs timely sowing for best performance."
+                ]
+            },
+            cotton: {
+                priceFallback: { min: "6200", max: "7800", marketDate: "Reference mandi rate" },
+                howGrow: [
+                    "Use well-drained soil and quality seeds with proper spacing.",
+                    "Apply potash-rich fertilization and manage early weeds.",
+                    "Monitor bollworm and sucking pests throughout season."
+                ],
+                advantages: [
+                    "High-value cash crop.",
+                    "Useful crop residue and seed by-products.",
+                    "Can provide good returns with proper pest control."
+                ],
+                disadvantages: [
+                    "Sensitive to pest outbreaks.",
+                    "Long crop duration.",
+                    "Cost of cultivation can be high."
+                ]
+            },
+            mango: {
+                priceFallback: { min: "2500", max: "6000", marketDate: "Reference mandi rate" },
+                howGrow: [
+                    "Plant grafted seedlings in well-drained loamy soil with full sunlight.",
+                    "Maintain 8-10 meter spacing and prune regularly for canopy shape.",
+                    "Irrigate during dry months and reduce watering during flowering.",
+                    "Apply organic manure and balanced NPK before flowering and fruit set."
+                ],
+                advantages: [
+                    "High consumer demand and export potential.",
+                    "Perennial tree gives yield for many years.",
+                    "Value-added products like pulp and pickle increase income options."
+                ],
+                disadvantages: [
+                    "Takes years for full commercial yield.",
+                    "Flower and fruit drop risk due to weather fluctuations.",
+                    "Needs orchard-level pest and disease management."
+                ]
+            }
+        };
+
+        const cropAliases = { mongo: "mango" };
+        let availableCrops = [...DEFAULT_CROPS];
+
+        function renderList(listId, items) {
+            const listEl = document.getElementById(listId);
+            listEl.innerHTML = "";
+            items.forEach((text) => {
+                const li = document.createElement("li");
+                li.textContent = text;
+                listEl.appendChild(li);
+            });
+        }
+
+        function showInfoError(message) {
+            const errorEl = document.getElementById("infoError");
+            errorEl.textContent = message;
+            errorEl.classList.add("show");
+        }
+
+        function clearInfoError() {
+            const errorEl = document.getElementById("infoError");
+            errorEl.textContent = "";
+            errorEl.classList.remove("show");
+        }
+
+        function normalizeCropName(name) {
+            const clean = String(name || "").trim().toLowerCase();
+            return cropAliases[clean] || clean;
+        }
+
+        function titleCase(value) {
+            return String(value)
+                .split(" ")
+                .map((part) => part ? part[0].toUpperCase() + part.slice(1) : part)
+                .join(" ");
+        }
+
+        function buildGenericDetails(cropName) {
+            const pretty = titleCase(cropName);
+            return {
+                priceFallback: { min: "2000", max: "4500", marketDate: "Reference mandi rate" },
+                howGrow: [
+                    `Prepare well-drained field for ${pretty} with recommended spacing.`,
+                    "Use quality seeds/seedlings and follow local sowing season.",
+                    "Apply balanced nutrients based on soil test in split doses.",
+                    "Irrigate by growth stage and avoid water stress.",
+                    "Monitor pests and diseases weekly and use integrated management."
+                ],
+                advantages: [
+                    `${pretty} has regular market demand in many regions.`,
+                    "Can provide stable returns with proper crop management.",
+                    "Suitable for crop planning when matched to local conditions."
+                ],
+                disadvantages: [
+                    "Yield can drop with weather stress.",
+                    "Needs timely nutrient and irrigation management.",
+                    "Pest and disease pressure can affect profitability."
+                ]
+            };
+        }
+
+        function getDetailsForCrop(cropName) {
+            return cropKnowledge[cropName] || buildGenericDetails(cropName);
+        }
+
+        function renderCropChips(crops) {
+            const wrap = document.getElementById("cropChipWrap");
+            wrap.innerHTML = "";
+            crops.forEach((crop) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "chip";
+                button.textContent = titleCase(crop);
+                button.addEventListener("click", async () => {
+                    document.getElementById("cropName").value = crop;
+                    await loadCropDetails(crop);
+                });
+                wrap.appendChild(button);
+            });
+        }
+
+        async function loadAvailableCrops() {
+            try {
+                const res = await fetch(`${API_URL}/crops`);
+                const data = await res.json();
+                if (data.success && Array.isArray(data.crops) && data.crops.length) {
+                    availableCrops = data.crops.map((crop) => String(crop).toLowerCase());
+                }
+            } catch (err) {
+                // Keep default crop list when backend list is unavailable.
+            }
+            renderCropChips(availableCrops);
+        }
+
+        async function fetchLivePrice(cropName) {
+            try {
+                const res = await fetch(`${API_URL}/mandi-prices?commodity=${encodeURIComponent(cropName)}&limit=1`);
+                const data = await res.json();
+                if (!data.success || !data.prices || !data.prices.length) return null;
+                return data.prices[0];
+            } catch (err) {
+                return null;
+            }
+        }
+
+        async function fetchPredictedPrice(cropName) {
+            try {
+                const res = await fetch(`${API_URL}/crop-price-predict?crop=${encodeURIComponent(cropName)}`);
+                const data = await res.json();
+                if (!data.success) return null;
+                return data;
+            } catch (err) {
+                return null;
+            }
+        }
+
+        async function loadCropDetails(inputName) {
+            clearInfoError();
+            const normalized = normalizeCropName(inputName);
+            if (!normalized) {
+                showInfoError("Please enter crop name.");
+                return;
+            }
+            const details = getDetailsForCrop(normalized);
+
+            document.getElementById("cropDetailsMeta").textContent =
+                `Crop: ${normalized.toUpperCase()} | Showing grow guide + live mandi price (if available)`;
+            renderList("howGrowList", details.howGrow);
+            renderList("advantagesList", details.advantages);
+            renderList("disadvantagesList", details.disadvantages);
+
+            document.getElementById("minPrice").textContent = "NA";
+            document.getElementById("maxPrice").textContent = "NA";
+            document.getElementById("predictedPrice").textContent = "NA";
+            document.getElementById("marketDate").textContent = "NA";
+            document.getElementById("priceNote").textContent = "";
+
+            const predicted = await fetchPredictedPrice(normalized);
+            if (predicted && predicted.predicted_price != null) {
+                document.getElementById("predictedPrice").textContent = String(predicted.predicted_price);
+            }
+
+            const livePrice = await fetchLivePrice(normalized);
+            if (livePrice && (livePrice.min_price || livePrice.max_price)) {
+                document.getElementById("minPrice").textContent = livePrice.min_price || "NA";
+                document.getElementById("maxPrice").textContent = livePrice.max_price || "NA";
+                document.getElementById("marketDate").textContent =
+                    `${livePrice.market || "Unknown market"} / ${livePrice.date || "Unknown date"}`;
+                if (predicted && predicted.predicted_price != null) {
+                    document.getElementById("priceNote").textContent =
+                        "Price source: Live Agmarknet API + Kaggle historical prediction.";
+                } else {
+                    document.getElementById("priceNote").textContent =
+                        "Price source: Live Agmarknet API.";
+                }
+            } else {
+                const fallback = details.priceFallback || { min: "2000", max: "4000", marketDate: "Reference mandi rate" };
+                document.getElementById("minPrice").textContent = fallback.min;
+                document.getElementById("maxPrice").textContent = fallback.max;
+                document.getElementById("marketDate").textContent = fallback.marketDate;
+                if (predicted && predicted.predicted_price != null) {
+                    document.getElementById("priceNote").textContent =
+                        "Live price unavailable. Showing reference range + Kaggle predicted price.";
+                } else {
+                    document.getElementById("priceNote").textContent =
+                        "Live and predicted price unavailable. Showing reference price range.";
+                }
+            }
+
+            document.getElementById("cropDetails").style.display = "block";
+            document.getElementById("cropDetailsEmpty").style.display = "none";
+        }
+
+        document.getElementById("cropInfoForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const inputName = document.getElementById("cropName").value;
+            await loadCropDetails(inputName);
+        });
+
+        loadAvailableCrops();
+    </script>
+</body>
+</html>
+
+

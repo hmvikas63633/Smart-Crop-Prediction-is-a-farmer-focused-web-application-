@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Smart Crop Prediction</title>
+    <style>
+        :root {
+            --bg-1: #6d68d8;
+            --bg-2: #5f4dbf;
+            --panel-border: rgba(255, 255, 255, 0.2);
+            --text: #f6f3ff;
+            --text-soft: #d7cef8;
+            --accent: #ffd74a;
+            --success: #6af0a5;
+            --danger: #ff7b8c;
+            --card: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at 10% 10%, #8c89f1 0%, transparent 40%),
+                        radial-gradient(circle at 95% 80%, #3f4bab 0%, transparent 30%),
+                        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .shell {
+            width: min(1080px, 100%);
+            min-height: 680px;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 24px 48px rgba(19, 18, 52, 0.5);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+        }
+
+        .left, .right { padding: 48px 46px; }
+        .left { border-right: 1px solid rgba(255, 255, 255, 0.14); }
+
+        .logo {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.14);
+            margin-bottom: 26px;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .title { font-size: clamp(2rem, 3.6vw, 3.4rem); line-height: 1.03; font-weight: 800; margin-bottom: 14px; }
+        .subtitle { color: var(--text-soft); font-size: 1.22rem; line-height: 1.45; max-width: 430px; }
+
+        .stats { margin-top: 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .stat {
+            border: 1px solid var(--panel-border);
+            background: var(--card);
+            border-radius: 16px;
+            min-height: 118px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 14px;
+        }
+        .stat strong { display: block; color: var(--accent); font-size: 2.1rem; line-height: 1; margin-bottom: 8px; }
+        .stat span { color: var(--text-soft); font-size: 1rem; font-weight: 600; }
+
+        .list { margin-top: 110px; color: var(--text-soft); font-size: 1.05rem; display: flex; align-items: center; gap: 10px; }
+        .dot { width: 10px; height: 10px; border-radius: 999px; background: #50ff6a; box-shadow: 0 0 18px #50ff6a; display: inline-block; }
+
+        .welcome { font-size: 3rem; line-height: 1.08; font-weight: 800; margin-top: 8px; }
+        .welcome-sub { margin-top: 8px; color: var(--text-soft); font-size: 1.3rem; }
+
+        .tabs {
+            margin-top: 24px;
+            background: rgba(34, 30, 87, 0.45);
+            border-radius: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 4px;
+            gap: 4px;
+        }
+        .tabs a {
+            text-align: center;
+            border-radius: 10px;
+            padding: 14px 8px;
+            color: var(--text-soft);
+            font-size: 1.05rem;
+            font-weight: 700;
+            background: transparent;
+            text-decoration: none;
+        }
+        .tabs a.active { background: rgba(255, 255, 255, 0.22); color: #fff; }
+
+        .msg {
+            margin-top: 18px;
+            border-radius: 12px;
+            padding: 13px 14px;
+            border: 1px solid transparent;
+            font-size: 1.03rem;
+            font-weight: 600;
+            display: none;
+        }
+        .msg.error { background: rgba(255, 45, 88, 0.14); border-color: rgba(255, 121, 144, 0.45); color: #ffb0ba; }
+        .msg.success { background: rgba(49, 255, 166, 0.14); border-color: rgba(112, 255, 196, 0.45); color: #8fffc8; }
+
+        form { margin-top: 18px; }
+        .field { margin-bottom: 18px; }
+        label {
+            display: block;
+            font-size: 0.98rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: #f2ecff;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .input-wrap { position: relative; }
+        .input-wrap input {
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid var(--panel-border);
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            padding: 14px 66px 14px 14px;
+            font-size: 1.1rem;
+        }
+        .input-wrap input::placeholder { color: #c5bae9; }
+        .toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #eee6ff;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 6px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2px;
+            margin-bottom: 18px;
+            color: var(--text-soft);
+            font-size: 1rem;
+        }
+        .row a { color: #e6e0ff; text-decoration: none; font-weight: 600; }
+
+        .submit {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #fff;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06));
+            border-radius: 15px;
+            font-size: 2rem;
+            font-weight: 800;
+            padding: 15px;
+            cursor: pointer;
+        }
+        .submit:disabled { opacity: 0.75; cursor: wait; }
+
+        .bottom-link { margin-top: 14px; text-align: center; }
+        .bottom-link a { color: #efe8ff; text-decoration: none; font-weight: 700; opacity: 0.9; }
+
+        @media (max-width: 920px) {
+            .shell { grid-template-columns: 1fr; min-height: auto; }
+            .left { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
+            .list { margin-top: 28px; }
+            .welcome { font-size: 2.35rem; }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="left">
+            <div class="logo">SC</div>
+            <h1 class="title">Smart Crop Prediction</h1>
+            <p class="subtitle">AI-powered crop recommendations based on your soil and climate conditions.</p>
+            <div class="stats">
+                <article class="stat"><div><strong>22+</strong><span>Crops Supported</span></div></article>
+                <article class="stat"><div><strong>96%</strong><span>Model Accuracy</span></div></article>
+                <article class="stat"><div><strong>7</strong><span>Input Factors</span></div></article>
+                <article class="stat"><div><strong>ML</strong><span>Powered by AI</span></div></article>
+            </div>
+            <p class="list"><span class="dot"></span>Soil NPK and pH analysis</p>
+        </section>
+        <section class="right">
+            <h2 class="welcome">Welcome back</h2>
+            <p class="welcome-sub">Sign in to your account to continue</p>
+            <div class="tabs">
+                <a class="active" href="/login">Sign In</a>
+                <a href="/register">Register</a>
+            </div>
+            <div id="errorMsg" class="msg error">Invalid credentials. Please try again.</div>
+            <div id="successMsg" class="msg success">Login successful! Redirecting...</div>
+            <form id="loginForm">
+                <div class="field">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrap"><input id="email" type="email" placeholder="farmer@example.com" required></div>
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <input id="password" type="password" placeholder="Enter your password" required>
+                        <button id="togglePwd" class="toggle" type="button" aria-label="Show or hide password">Show</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <label style="display:flex; align-items:center; gap:8px; text-transform:none; margin:0; letter-spacing:0; font-size:1rem; font-weight:600; color:var(--text-soft);">
+                        <input type="checkbox" style="width:16px; height:16px;">Remember me
+                    </label>
+                    <a href="#">Forgot password?</a>
+                </div>
+                <button id="submitBtn" class="submit" type="submit">Sign In</button>
+            </form>
+            <p class="bottom-link"><a href="/register">Need an account? Register</a></p>
+        </section>
+    </main>
+    <script>
+        const USERS_KEY = "sc_users_v1";
+        const AUTH_KEY = "sc_auth_user";
+        const LOGIN_LOCK_KEY = "sc_login_lock";
+        const MAX_ATTEMPTS = 5;
+        const LOCK_MS = 60000;
+
+        const loginForm = document.getElementById("loginForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const errorMsg = document.getElementById("errorMsg");
+        const successMsg = document.getElementById("successMsg");
+        const toggleBtn = document.getElementById("togglePwd");
+        const passwordInput = document.getElementById("password");
+        const emailInput = document.getElementById("email");
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        async function sha256(value) {
+            const bytes = new TextEncoder().encode(value);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
+            return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
+        }
+
+        function getLockState() {
+            const raw = localStorage.getItem(LOGIN_LOCK_KEY);
+            return raw ? JSON.parse(raw) : {};
+        }
+
+        function saveLockState(lock) {
+            localStorage.setItem(LOGIN_LOCK_KEY, JSON.stringify(lock));
+        }
+
+        function setError(text) {
+            errorMsg.textContent = text;
+            errorMsg.style.display = "block";
+        }
+
+        function isLocked(email) {
+            const lock = getLockState();
+            const item = lock[email];
+            if (!item || !item.lockedUntil) return false;
+            const now = Date.now();
+            if (now >= item.lockedUntil) {
+                delete lock[email];
+                saveLockState(lock);
+                return false;
+            }
+            const sec = Math.ceil((item.lockedUntil - now) / 1000);
+            setError(`Too many failed attempts. Try again in ${sec}s.`);
+            return true;
+        }
+
+        function recordFailure(email) {
+            const lock = getLockState();
+            const item = lock[email] || { attempts: 0, lockedUntil: 0 };
+            item.attempts += 1;
+            if (item.attempts >= MAX_ATTEMPTS) {
+                item.lockedUntil = Date.now() + LOCK_MS;
+                item.attempts = 0;
+            }
+            lock[email] = item;
+            saveLockState(lock);
+        }
+
+        function clearFailure(email) {
+            const lock = getLockState();
+            if (lock[email]) {
+                delete lock[email];
+                saveLockState(lock);
+            }
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            const isPassword = passwordInput.type === "password";
+            passwordInput.type = isPassword ? "text" : "password";
+            toggleBtn.textContent = isPassword ? "Hide" : "Show";
+        });
+
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            errorMsg.style.display = "none";
+            successMsg.style.display = "none";
+
+            const email = emailInput.value.trim().toLowerCase();
+            const password = passwordInput.value.trim();
+            if (!email || !password) {
+                setError("Please enter email and password.");
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                setError("Please enter a valid email address.");
+                return;
+            }
+
+            if (isLocked(email)) {
+                return;
+            }
+
+            submitBtn.disabled = true;
+            try {
+                const users = JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+                const found = users.find((u) => String(u.email).toLowerCase() === email);
+                if (!found) {
+                    recordFailure(email);
+                    setError("Invalid credentials. Please try again.");
+                    return;
+                }
+
+                const passwordHash = await sha256(password);
+                if (found.passwordHash !== passwordHash) {
+                    recordFailure(email);
+                    setError("Invalid credentials. Please try again.");
+                    return;
+                }
+
+                clearFailure(email);
+                localStorage.setItem(AUTH_KEY, JSON.stringify({
+                    email,
+                    name: found.name || "",
+                    loginAt: new Date().toISOString()
+                }));
+
+                successMsg.style.display = "block";
+                setTimeout(() => { window.location.href = "/predict"; }, 700);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

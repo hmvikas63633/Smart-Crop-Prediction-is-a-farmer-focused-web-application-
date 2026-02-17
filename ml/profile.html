@@ -1,0 +1,432 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Smart Crop Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1f1f1f;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .top-links {
+            margin-top: 14px;
+        }
+
+        .top-links a {
+            display: inline-block;
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 999px;
+            padding: 8px 14px;
+            margin: 4px;
+            font-size: 0.95rem;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            color: #5b6fdf;
+            margin-bottom: 14px;
+            font-size: 1.6rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .stat {
+            background: linear-gradient(135deg, #f2f5ff 0%, #dee6ff 100%);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 1.4rem;
+            color: #4f63d2;
+        }
+
+        .stat span {
+            font-size: 0.82rem;
+            color: #566;
+        }
+
+        .field {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #2b335f;
+            font-size: 0.92rem;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid #c9d0f5;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            background: #fff;
+        }
+
+        textarea {
+            min-height: 95px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .btn.secondary {
+            background: #edf0ff;
+            color: #4250a3;
+            border: 1px solid #cfd6ff;
+        }
+
+        .list-block {
+            margin-top: 16px;
+        }
+
+        .list-block h3 {
+            color: #5b6fdf;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            background: #eef2ff;
+            border: 1px solid #dbe2ff;
+            color: #334;
+            padding: 8px 10px;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chip button {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #8a3d3d;
+            font-weight: 700;
+        }
+
+        .old-list {
+            list-style: none;
+            margin-top: 6px;
+        }
+
+        .old-list li {
+            border: 1px solid #eceffc;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .small {
+            color: #5f6587;
+            font-size: 0.82rem;
+        }
+
+        .empty {
+            color: #6b7191;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2.1rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Smart Crop Prediction System</h1>
+            <p>Profile Dashboard for Farmers</p>
+            <div class="top-links">
+                <a href="/predict">Prediction Page</a>
+                <a href="/grow-plan">Grow Plan Page</a>
+                <a href="/profile">Profile Page</a>
+                <a href="/login">Login Page</a>
+            </div>
+        </div>
+
+        <div class="layout">
+            <aside class="card">
+                <h2>Farm Summary</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <b id="statFavorites">0</b>
+                        <span>Favorite Crops</span>
+                    </div>
+                    <div class="stat">
+                        <b id="statHistory">0</b>
+                        <span>Old Crops</span>
+                    </div>
+                    <div class="stat">
+                        <b id="statTotal">0</b>
+                        <span>Total Activity</span>
+                    </div>
+                </div>
+
+                <div class="list-block">
+                    <h3>Favorite Crops</h3>
+                    <div id="favoriteWrap" class="chip-list"></div>
+                    <p id="favoriteEmpty" class="empty">No favorite crops yet. Add from Prediction page.</p>
+                </div>
+
+                <div class="list-block">
+                    <h3>Old Crops</h3>
+                    <ul id="oldCropList" class="old-list"></ul>
+                    <p id="oldEmpty" class="empty">No old crops found yet.</p>
+                </div>
+            </aside>
+
+            <section class="card">
+                <h2>Edit Profile</h2>
+                <form id="profileForm">
+                    <div class="field">
+                        <label for="fullName">Full Name</label>
+                        <input id="fullName" type="text" placeholder="Enter full name">
+                    </div>
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input id="email" type="email" placeholder="Enter email">
+                    </div>
+                    <div class="field">
+                        <label for="phone">Phone</label>
+                        <input id="phone" type="text" placeholder="Enter phone number">
+                    </div>
+                    <div class="field">
+                        <label for="location">Location</label>
+                        <input id="location" type="text" placeholder="Village / District / State">
+                    </div>
+                    <div class="field">
+                        <label for="bio">Bio Data</label>
+                        <textarea id="bio" placeholder="Tell us about your farm, soil, and crop goals..."></textarea>
+                    </div>
+                    <div class="actions">
+                        <button class="btn primary" type="submit">Save Bio</button>
+                        <button class="btn secondary" type="button" id="clearBioBtn">Clear Bio</button>
+                        <button class="btn secondary" type="button" id="clearFavoritesBtn">Clear Favorites</button>
+                        <button class="btn secondary" type="button" id="clearHistoryBtn">Clear History</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const PROFILE_KEY = "user_bio_data";
+        const FAVORITES_KEY = "favorite_crops";
+        const HISTORY_KEY = "old_crops";
+
+        const profileForm = document.getElementById("profileForm");
+        const clearBioBtn = document.getElementById("clearBioBtn");
+        const favoriteWrap = document.getElementById("favoriteWrap");
+        const favoriteEmpty = document.getElementById("favoriteEmpty");
+        const clearFavoritesBtn = document.getElementById("clearFavoritesBtn");
+        const oldCropList = document.getElementById("oldCropList");
+        const oldEmpty = document.getElementById("oldEmpty");
+        const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+
+        function loadBioData() {
+            const raw = localStorage.getItem(PROFILE_KEY);
+            if (!raw) return;
+            const data = JSON.parse(raw);
+            document.getElementById("fullName").value = data.fullName || data.name || "";
+            document.getElementById("email").value = data.email || "";
+            document.getElementById("phone").value = data.phone || "";
+            document.getElementById("location").value = data.location || "";
+            document.getElementById("bio").value = data.bio || "";
+        }
+
+        function saveBioData(event) {
+            event.preventDefault();
+            const fullName = document.getElementById("fullName").value.trim();
+            const data = {
+                fullName,
+                name: fullName,
+                email: document.getElementById("email").value.trim(),
+                phone: document.getElementById("phone").value.trim(),
+                location: document.getElementById("location").value.trim(),
+                bio: document.getElementById("bio").value.trim()
+            };
+            localStorage.setItem(PROFILE_KEY, JSON.stringify(data));
+            alert("Bio data saved.");
+        }
+
+        function clearBioData() {
+            localStorage.removeItem(PROFILE_KEY);
+            profileForm.reset();
+            alert("Bio data cleared.");
+        }
+
+        function updateStats() {
+            const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+            document.getElementById("statFavorites").textContent = favorites.length;
+            document.getElementById("statHistory").textContent = history.length;
+            document.getElementById("statTotal").textContent = favorites.length + history.length;
+        }
+
+        function loadFavorites() {
+            const items = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+            favoriteWrap.innerHTML = "";
+            if (!items.length) {
+                favoriteEmpty.style.display = "block";
+                updateStats();
+                return;
+            }
+            favoriteEmpty.style.display = "none";
+            items.forEach((crop) => {
+                const chip = document.createElement("div");
+                chip.className = "chip";
+                chip.innerHTML = `<span>${crop}</span><button type="button" data-crop="${crop}">x</button>`;
+                chip.querySelector("button").addEventListener("click", () => removeFavorite(crop));
+                favoriteWrap.appendChild(chip);
+            });
+            updateStats();
+        }
+
+        function removeFavorite(cropName) {
+            const items = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+            const filtered = items.filter((item) => String(item).toLowerCase() !== String(cropName).toLowerCase());
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(filtered));
+            loadFavorites();
+        }
+
+        function clearFavorites() {
+            localStorage.removeItem(FAVORITES_KEY);
+            loadFavorites();
+        }
+
+        function loadOldCrops() {
+            const items = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+            oldCropList.innerHTML = "";
+            if (!items.length) {
+                oldEmpty.style.display = "block";
+                updateStats();
+                return;
+            }
+            oldEmpty.style.display = "none";
+            items.forEach((row) => {
+                const li = document.createElement("li");
+                const dateText = row.savedAt ? new Date(row.savedAt).toLocaleString() : "Saved";
+                li.innerHTML = `<strong>${row.crop || "Unknown crop"}</strong><span class="small">${dateText}</span>`;
+                oldCropList.appendChild(li);
+            });
+            updateStats();
+        }
+
+        function clearOldCrops() {
+            localStorage.removeItem(HISTORY_KEY);
+            loadOldCrops();
+        }
+
+        profileForm.addEventListener("submit", saveBioData);
+        clearBioBtn.addEventListener("click", clearBioData);
+        clearFavoritesBtn.addEventListener("click", clearFavorites);
+        clearHistoryBtn.addEventListener("click", clearOldCrops);
+
+        loadBioData();
+        loadFavorites();
+        loadOldCrops();
+        updateStats();
+    </script>
+</body>
+</html>
